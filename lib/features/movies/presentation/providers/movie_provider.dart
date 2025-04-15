@@ -7,10 +7,10 @@ class MovieProvider with ChangeNotifier {
 
   MovieProvider(this.getPopularMovies);
 
-  List<Movie> _movies = [];
+  List<MovieEntity> _movies = [];
   bool _isLoading = false;
 
-  List<Movie> get movies => _movies;
+  List<MovieEntity> get movies => _movies;
   bool get isLoading => _isLoading;
 
   Future<void> fetchMovies() async {

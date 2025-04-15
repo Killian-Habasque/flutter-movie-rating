@@ -8,7 +8,7 @@ class MovieRepositoryImpl implements MovieRepository {
   MovieRepositoryImpl(this.remoteDataSource);
 
   @override
-  Future<List<Movie>> getPopularMovies() {
+  Future<List<MovieEntity>> getPopularMovies() {
     return remoteDataSource.fetchPopularMovies();
   }
 }

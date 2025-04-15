@@ -1,6 +1,6 @@
 import '../../domain/entities/movie.dart';
 
-class MovieModel extends Movie {
+class MovieModel extends MovieEntity {
   final bool adult;
   final String backdropPath;
   final List<int> genreIds;

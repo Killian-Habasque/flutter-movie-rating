@@ -6,5 +6,5 @@ class GetPopularMovies {
 
   GetPopularMovies(this.repository);
 
-  Future<List<Movie>> call() => repository.getPopularMovies();
+  Future<List<MovieEntity>> call() => repository.getPopularMovies();
 }
