@@ -10,8 +10,12 @@ class MovieRepositoryImpl implements MovieRepository {
   MovieRepositoryImpl(this.remoteDataSource);
 
   @override
-  Future<List<MovieEntity>> getPopularMovies() {
-    return remoteDataSource.fetchPopularMovies();
+  Future<List<MovieEntity>> getPopularMovies() async {
+    // Récupère les MovieModel et les convertis en MovieEntity
+    final popularMovies = await remoteDataSource.fetchPopularMovies();
+    return popularMovies
+        .map((model) => model.toEntity())
+        .toList(); // Conversion
   }
 
   @override
@@ -19,5 +23,11 @@ class MovieRepositoryImpl implements MovieRepository {
     final movieModel = await remoteDataSource.fetchMovieDetails(movieId);
 
     return MovieDetailEntity.fromModel(movieModel);
+  }
+
+  @override
+  Future<List<MovieEntity>> searchMovies(String query) async {
+    final results = await remoteDataSource.searchMovies(query);
+    return results.map((model) => MovieEntity.fromModel(model)).toList();
   }
 }

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:init/features/movies/domain/usecases/search_movie.dart';
 import 'package:provider/provider.dart';
 
 import 'features/movies/data/datasources/movie_remote_datasource.dart';
 import 'features/movies/data/repositories/movie_repository_impl.dart';
 import 'features/movies/domain/usecases/get_popular_movies.dart';
 import 'features/movies/domain/usecases/get_movie_details.dart';
+import 'features/movies/presentation/providers/search_movie_provider.dart';
 import 'features/movies/presentation/providers/movie_provider.dart';
 import 'features/movies/presentation/providers/movie_detail_provider.dart';
 import 'features/movies/presentation/pages/home_page.dart';
@@ -18,7 +20,7 @@ Future<void> main() async {
   final movieRemoteDataSource = MovieRemoteDataSource();
   final movieRepository = MovieRepositoryImpl(movieRemoteDataSource);
   final getPopularMovies = GetPopularMovies(movieRepository);
-
+  final searchMovies = SearchMovies(movieRepository);
   final getMovieDetails = GetMovieDetails(movieRepository);
 
   runApp(
@@ -27,6 +29,10 @@ Future<void> main() async {
         ChangeNotifierProvider(
           create: (_) => MovieProvider(getPopularMovies)..fetchMovies(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => SearchMovieProvider(searchMovies),
+        ),
+
         ChangeNotifierProvider(
           create: (_) => MovieDetailProvider(getMovieDetails),
         ),
