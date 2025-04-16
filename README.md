@@ -19,4 +19,5 @@ samples, guidance on mobile development, and a full API reference.
 - Ajout de riverpod
 - Clear archi 
 
+
 https://developer.themoviedb.org/docs/getting-started
