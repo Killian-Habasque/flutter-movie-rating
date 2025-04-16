@@ -1,4 +1,5 @@
 import 'package:init/features/movies/data/models/movie_detail_model.dart';
+import 'package:init/features/movies/domain/entities/cast.dart';
 
 class MovieDetailEntity {
   final int id;
@@ -60,16 +61,4 @@ class MovieDetailEntity {
       backdropPath: model.backdropPath,
     );
   }
-}
-
-class Cast {
-  final String name;
-  final String character;
-  final String profilePath;
-
-  Cast({
-    required this.name,
-    required this.character,
-    required this.profilePath,
-  });
 }

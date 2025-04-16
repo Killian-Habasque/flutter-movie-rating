@@ -20,11 +20,14 @@ class MovieRemoteDataSource {
 
   Future<MovieDetailModel> fetchMovieDetails(int movieId) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/movie/$movieId?api_key=$apiKey'),
+      Uri.parse(
+        '$baseUrl/movie/$movieId?api_key=$apiKey&append_to_response=credits',
+      ),
     );
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> result = json.decode(response.body);
+
       return MovieDetailModel.fromJson(result);
     } else {
       throw Exception('Failed to fetch movie details');
