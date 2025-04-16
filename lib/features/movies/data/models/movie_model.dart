@@ -1,57 +1,72 @@
-import '../../domain/entities/movie.dart';
+import 'package:init/features/movies/domain/entities/movie.dart';
 
-class MovieModel extends MovieEntity {
-  final bool adult;
-  final String backdropPath;
-  final List<int> genreIds;
+class MovieModel {
   final int id;
-  final String originalLanguage;
-  final String originalTitle;
-  final double popularity;
-  final String releaseDate;
-  final bool video;
+  final String title;
+  final String overview;
+  final String posterPath;
   final double voteAverage;
-  final int voteCount;
+  final String releaseDate;
+  final List<String> genres;
+  final String originalLanguage;
+  final int runtime;
+  final int budget;
+  final int revenue;
+  final String tagline;
+  final String backdropPath;
 
   MovieModel({
-    required this.adult,
-    required this.backdropPath,
-    required this.genreIds,
     required this.id,
-    required this.originalLanguage,
-    required this.originalTitle,
-    required this.popularity,
-    required this.releaseDate,
-    required this.video,
+    required this.title,
+    required this.overview,
+    required this.posterPath,
     required this.voteAverage,
-    required this.voteCount,
-    required String title,
-    required String posterPath,
-    required String overview,
-  }) : super(
-         id: id,
-         title: title,
-         posterPath: posterPath,
-         overview: overview,
-         voteAverage: voteAverage,
-       );
+    required this.releaseDate,
+    required this.genres,
+    required this.originalLanguage,
+    required this.runtime,
+    required this.budget,
+    required this.revenue,
+    required this.tagline,
+    required this.backdropPath,
+  });
 
   factory MovieModel.fromJson(Map<String, dynamic> json) {
     return MovieModel(
-      title: json['title'] ?? '',
-      posterPath: json['poster_path'] ?? '',
-      overview: json['overview'] ?? '',
-      adult: json['adult'] ?? true,
-      backdropPath: json['backdrop_path'] ?? '',
-      genreIds: List<int>.from(json['genre_ids'] ?? []),
       id: json['id'] ?? 0,
-      originalLanguage: json['original_language'] ?? '',
-      originalTitle: json['original_title'] ?? '',
-      popularity: (json['popularity'] ?? 0).toDouble(),
-      releaseDate: json['release_date'] ?? '',
-      video: json['video'] ?? false,
+      title: json['title'] ?? '',
+      overview: json['overview'] ?? '',
+      posterPath: json['poster_path'] ?? '',
       voteAverage: (json['vote_average'] ?? 0).toDouble(),
-      voteCount: json['vote_count'] ?? 0,
+      releaseDate: json['release_date'] ?? '',
+      genres: List<String>.from(
+        json['genres']?.map((g) => g['name'] ?? '') ?? [],
+      ),
+      originalLanguage: json['original_language'] ?? '',
+      runtime: json['runtime'] ?? 0,
+      budget: json['budget'] ?? 0,
+      revenue: json['revenue'] ?? 0,
+      tagline: json['tagline'] ?? '',
+      backdropPath: json['backdrop_path'] ?? '',
+    );
+  }
+
+  // Définir la méthode toEntity ici
+  MovieEntity toEntity() {
+    return MovieEntity(
+      id: id,
+      title: title,
+      posterPath: posterPath,
+      overview: overview,
+      voteAverage: voteAverage,
+      releaseDate: releaseDate,
+      genres: genres,
+      originalLanguage: originalLanguage,
+      runtime: runtime,
+      budget: budget,
+      revenue: revenue,
+      tagline: tagline,
+      backdropPath: backdropPath,
     );
   }
 }

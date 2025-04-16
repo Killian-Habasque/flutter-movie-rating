@@ -10,8 +10,27 @@ class MovieRepositoryImpl implements MovieRepository {
   MovieRepositoryImpl(this.remoteDataSource);
 
   @override
-  Future<List<MovieEntity>> getPopularMovies() {
-    return remoteDataSource.fetchPopularMovies();
+  Future<List<MovieEntity>> getPopularMovies() async {
+    final popularMovies = await remoteDataSource.fetchPopularMovies();
+    return popularMovies.map((model) => model.toEntity()).toList();
+  }
+
+  @override
+  Future<List<MovieEntity>> getNowPlayingMovies() async {
+    final nowPlayingMoview = await remoteDataSource.fetchNowPlayingMovies();
+    return nowPlayingMoview.map((model) => model.toEntity()).toList();
+  }
+
+  @override
+  Future<List<MovieEntity>> getUpcomingMovies() async {
+    final upcomingMovies = await remoteDataSource.fetchUpcomingMovies();
+    return upcomingMovies.map((model) => model.toEntity()).toList();
+  }
+
+  @override
+  Future<List<MovieEntity>> getTopRatedMovies() async {
+    final topRatedMovies = await remoteDataSource.fetchTopRatedMovies();
+    return topRatedMovies.map((model) => model.toEntity()).toList();
   }
 
   @override
@@ -19,5 +38,11 @@ class MovieRepositoryImpl implements MovieRepository {
     final movieModel = await remoteDataSource.fetchMovieDetails(movieId);
 
     return MovieDetailEntity.fromModel(movieModel);
+  }
+
+  @override
+  Future<List<MovieEntity>> searchMovies(String query) async {
+    final results = await remoteDataSource.searchMovies(query);
+    return results.map((model) => MovieEntity.fromModel(model)).toList();
   }
 }
