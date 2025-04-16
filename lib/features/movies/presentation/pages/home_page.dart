@@ -21,8 +21,28 @@ class HomePage extends StatelessWidget {
                   return ListTile(
                     leading: Image.network(
                       'https://image.tmdb.org/t/p/w200${movie.posterPath}',
+                      width: 50,
+                      fit: BoxFit.cover,
+                      errorBuilder:
+                          (_, __, ___) => const Icon(Icons.image_not_supported),
                     ),
-                    title: Text(movie.title),
+                    title: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(movie.title),
+                        Text(
+                          '${movie.voteAverage.toStringAsFixed(1)}',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.pushNamed(
+                        context,
+                        '/movie_detail',
+                        arguments: movie.id,
+                      );
+                    },
                   );
                 },
               ),
