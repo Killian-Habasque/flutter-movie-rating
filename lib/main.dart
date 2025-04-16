@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:init/features/movies/domain/usecases/get_now_playing_movies.dart';
 import 'package:init/features/movies/domain/usecases/search_movie.dart';
 import 'package:provider/provider.dart';
 
 import 'features/movies/data/datasources/movie_remote_datasource.dart';
 import 'features/movies/data/repositories/movie_repository_impl.dart';
 import 'features/movies/domain/usecases/get_popular_movies.dart';
+import 'features/movies/domain/usecases/get_upcoming_movies.dart';
+import 'features/movies/domain/usecases/get_top_rated_movies.dart';
 import 'features/movies/domain/usecases/get_movie_details.dart';
 import 'features/movies/presentation/providers/search_movie_provider.dart';
 import 'features/movies/presentation/providers/movie_provider.dart';
@@ -20,6 +23,9 @@ Future<void> main() async {
   final movieRemoteDataSource = MovieRemoteDataSource();
   final movieRepository = MovieRepositoryImpl(movieRemoteDataSource);
   final getPopularMovies = GetPopularMovies(movieRepository);
+  final getUpcomingMovies = GetUpcomingMovies(movieRepository);
+  final getNowPlayingMovies = GetNowPlayingMovies(movieRepository);
+  final getTopRatedMovies = GetTopRatedMovies(movieRepository);
   final searchMovies = SearchMovies(movieRepository);
   final getMovieDetails = GetMovieDetails(movieRepository);
 
@@ -27,7 +33,13 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => MovieProvider(getPopularMovies)..fetchMovies(),
+          create:
+              (_) => MovieProvider(
+                getPopularMovies,
+                getUpcomingMovies,
+                getNowPlayingMovies,
+                getTopRatedMovies,
+              )..fetchMovies(),
         ),
         ChangeNotifierProvider(
           create: (_) => SearchMovieProvider(searchMovies),
@@ -48,6 +60,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Movie App',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),

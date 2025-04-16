@@ -34,6 +34,45 @@ class MovieRemoteDataSource {
     }
   }
 
+  Future<List<MovieModel>> fetchNowPlayingMovies() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/movie/now_playing?api_key=$apiKey'),
+    );
+
+    if (response.statusCode == 200) {
+      final List results = json.decode(response.body)['results'];
+      return results.map((e) => MovieModel.fromJson(e)).toList();
+    } else {
+      throw Exception('Failed to fetch popular movies');
+    }
+  }
+
+  Future<List<MovieModel>> fetchUpcomingMovies() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/movie/upcoming?api_key=$apiKey'),
+    );
+
+    if (response.statusCode == 200) {
+      final List results = json.decode(response.body)['results'];
+      return results.map((e) => MovieModel.fromJson(e)).toList();
+    } else {
+      throw Exception('Failed to fetch popular movies');
+    }
+  }
+
+  Future<List<MovieModel>> fetchTopRatedMovies() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/movie/top_rated?api_key=$apiKey'),
+    );
+
+    if (response.statusCode == 200) {
+      final List results = json.decode(response.body)['results'];
+      return results.map((e) => MovieModel.fromJson(e)).toList();
+    } else {
+      throw Exception('Failed to fetch popular movies');
+    }
+  }
+
   Future<List<MovieModel>> searchMovies(String query) async {
     final response = await http.get(
       Uri.parse('$baseUrl/search/movie?api_key=$apiKey&query=$query'),

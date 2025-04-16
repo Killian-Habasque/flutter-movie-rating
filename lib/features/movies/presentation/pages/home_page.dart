@@ -13,7 +13,7 @@ class HomePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Popular Movies'),
+        title: const Text('Movies'),
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
@@ -34,38 +34,73 @@ class HomePage extends StatelessWidget {
       body:
           provider.isLoading
               ? const Center(child: CircularProgressIndicator())
-              : ListView.builder(
-                itemCount: provider.movies.length,
-                itemBuilder: (context, index) {
-                  final movie = provider.movies[index];
-                  return ListTile(
-                    leading: Image.network(
-                      'https://image.tmdb.org/t/p/w200${movie.posterPath}',
-                      width: 50,
-                      fit: BoxFit.cover,
-                      errorBuilder:
-                          (_, __, ___) => const Icon(Icons.image_not_supported),
-                    ),
-                    title: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(movie.title),
-                        Text(
-                          '${movie.voteAverage.toStringAsFixed(1)}',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                    onTap: () {
-                      Navigator.pushNamed(
-                        context,
-                        '/movie_detail',
-                        arguments: movie.id,
-                      );
-                    },
-                  );
-                },
+              : ListView(
+                padding: const EdgeInsets.all(8.0),
+                children: [
+                  const Text(
+                    'Now playing',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  ...provider.nowPlayingMovies.map(
+                    (movie) => _buildMovieTile(context, movie),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  const Text(
+                    'Upcoming movies',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  ...provider.upcomingMovies.map(
+                    (movie) => _buildMovieTile(context, movie),
+                  ),
+                  const Text(
+                    'Top rated movies',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  ...provider.topRatedMovies.map(
+                    (movie) => _buildMovieTile(context, movie),
+                  ),
+
+                  const Text(
+                    'Popular movies',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  ...provider.popularMovies.map(
+                    (movie) => _buildMovieTile(context, movie),
+                  ),
+
+                  const SizedBox(height: 20),
+                ],
               ),
+    );
+  }
+
+  Widget _buildMovieTile(BuildContext context, movie) {
+    return ListTile(
+      leading: Image.network(
+        'https://image.tmdb.org/t/p/w200${movie.posterPath}',
+        width: 50,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported),
+      ),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(child: Text(movie.title)),
+          Text(
+            '${movie.voteAverage.toStringAsFixed(1)}',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+      onTap: () {
+        Navigator.pushNamed(context, '/movie_detail', arguments: movie.id);
+      },
     );
   }
 }
