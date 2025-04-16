@@ -28,6 +28,7 @@ class MovieProvider with ChangeNotifier {
   List<MovieEntity> get upcomingMovies => _upcomingMovies;
   List<MovieEntity> get nowPlayingMovies => _getNowPlayingMovies;
   List<MovieEntity> get topRatedMovies => _topRatedMovies;
+  
   bool get isLoading => _isLoading;
 
   Future<void> fetchMovies() async {
