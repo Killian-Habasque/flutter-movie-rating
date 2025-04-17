@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:init/core/constants.dart';
 import 'package:init/features/auth/data/repositories/auth_repository_impl.dart';
-import 'package:init/features/auth/data/services/auth_service.dart';
+import 'package:init/features/auth/data/repositories/user_repository_impl.dart';
 import 'package:init/features/auth/presentation/providers/user_provider.dart';
 import 'package:init/features/auth/presentation/screens/login_screen.dart';
 import 'package:init/features/movies/presentation/delegates/movie_search_delegate.dart';
@@ -16,7 +16,6 @@ class HomePage extends StatefulWidget {
   static Route<void> route() {
     return MaterialPageRoute<void>(
       settings: const RouteSettings(name: '/home'),
-
       builder: (_) => const HomePage(),
     );
   }
@@ -26,8 +25,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final AuthService _authService = AuthService();
-  final AuthRepository _authRepository = AuthRepository(apiKey);
+  final userRepository = UserRepositoryImpl(apiKey);
+  final authRepository = AuthRepositoryImpl(apiKey);
 
   String? _sessionId;
 
@@ -38,7 +37,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadSession() async {
-    final id = await _authService.getSessionId();
+    final id = await userRepository.getSessionId();
     setState(() => _sessionId = id);
 
     if (id != null) {
@@ -95,8 +94,8 @@ class _HomePageState extends State<HomePage> {
                   await Navigator.push(
                     context,
                     LoginScreen.route(
-                      authRepository: _authRepository,
-                      authService: _authService,
+                      authRepository: authRepository,
+                      userRepository: userRepository,
                     ),
                   );
                   await _loadSession();
@@ -105,60 +104,59 @@ class _HomePageState extends State<HomePage> {
               : IconButton(
                 icon: const Icon(Icons.logout),
                 onPressed: () async {
-                  await _authService.logout();
+                  await userRepository.logout();
                   Provider.of<UserProvider>(context, listen: false).clear();
                   setState(() => _sessionId = null);
                 },
               ),
         ],
       ),
-      body:
-          provider.isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : ListView(
-                padding: const EdgeInsets.all(8.0),
-                children: [
-                  const Text(
-                    'Now playing',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  ...provider.nowPlayingMovies.map(
-                    (movie) => _buildMovieTile(context, movie),
-                  ),
+      body: provider.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : ListView(
+              padding: const EdgeInsets.all(8.0),
+              children: [
+                const Text(
+                  'Now playing',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                ...provider.nowPlayingMovies.map(
+                  (movie) => _buildMovieTile(context, movie),
+                ),
 
-                  const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-                  const Text(
-                    'Upcoming movies',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  ...provider.upcomingMovies.map(
-                    (movie) => _buildMovieTile(context, movie),
-                  ),
+                const Text(
+                  'Upcoming movies',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                ...provider.upcomingMovies.map(
+                  (movie) => _buildMovieTile(context, movie),
+                ),
 
-                  const Text(
-                    'Top rated movies',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  ...provider.topRatedMovies.map(
-                    (movie) => _buildMovieTile(context, movie),
-                  ),
+                const Text(
+                  'Top rated movies',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                ...provider.topRatedMovies.map(
+                  (movie) => _buildMovieTile(context, movie),
+                ),
 
-                  const Text(
-                    'Popular movies',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  ...provider.popularMovies.map(
-                    (movie) => _buildMovieTile(context, movie),
-                  ),
+                const Text(
+                  'Popular movies',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                ...provider.popularMovies.map(
+                  (movie) => _buildMovieTile(context, movie),
+                ),
 
-                  const SizedBox(height: 20),
-                ],
-              ),
+                const SizedBox(height: 20),
+              ],
+            ),
     );
   }
 
