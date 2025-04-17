@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:init/features/auth/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
 // Movie data & logic
@@ -36,18 +37,23 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => MovieProvider(
-            GetPopularMovies(movieRepository),
-            GetUpcomingMovies(movieRepository),
-            GetNowPlayingMovies(movieRepository),
-            GetTopRatedMovies(movieRepository),
-          )..fetchMovies(),
+          create:
+              (_) => MovieProvider(
+                GetPopularMovies(movieRepository),
+                GetUpcomingMovies(movieRepository),
+                GetNowPlayingMovies(movieRepository),
+                GetTopRatedMovies(movieRepository),
+              )..fetchMovies(),
         ),
         ChangeNotifierProvider(
           create: (_) => SearchMovieProvider(SearchMovies(movieRepository)),
         ),
         ChangeNotifierProvider(
           create: (_) => MovieDetailProvider(GetMovieDetails(movieRepository)),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (_) => UserProvider(authService: AuthService(), apiKey: apiKey),
         ),
       ],
       child: const MyApp(),
@@ -81,7 +87,8 @@ class MyApp extends StatelessWidget {
         return MaterialPageRoute(builder: (_) => const HomePage());
       },
       routes: {
-        '/login': (_) => LoginScreen(
+        '/login':
+            (_) => LoginScreen(
               authRepository: authRepository,
               authService: authService,
             ),
