@@ -6,6 +6,13 @@ class MovieDetailPage extends StatelessWidget {
   final int movieId;
 
   const MovieDetailPage({super.key, required this.movieId});
+  static Route<void> route({required int movieId}) {
+    return MaterialPageRoute<void>(
+      settings: const RouteSettings(name: '/movie_detail'),
+
+      builder: (_) => MovieDetailPage(movieId: movieId),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

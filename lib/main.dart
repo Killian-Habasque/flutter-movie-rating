@@ -15,15 +15,6 @@ import 'features/movies/presentation/providers/movie_provider.dart';
 import 'features/movies/presentation/providers/movie_detail_provider.dart';
 import 'features/movies/presentation/providers/search_movie_provider.dart';
 import 'features/movies/presentation/pages/home_page.dart';
-import 'features/movies/presentation/pages/movie_detail_page.dart';
-
-// Auth
-import 'features/auth/data/repositories/auth_repository_impl.dart';
-import 'features/auth/data/services/auth_service.dart';
-import 'features/auth/presentation/screens/login_screen.dart';
-
-// App constants
-import 'core/constants.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,12 +27,13 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => MovieProvider(
-            GetPopularMovies(movieRepository),
-            GetUpcomingMovies(movieRepository),
-            GetNowPlayingMovies(movieRepository),
-            GetTopRatedMovies(movieRepository),
-          )..fetchMovies(),
+          create:
+              (_) => MovieProvider(
+                GetPopularMovies(movieRepository),
+                GetUpcomingMovies(movieRepository),
+                GetNowPlayingMovies(movieRepository),
+                GetTopRatedMovies(movieRepository),
+              )..fetchMovies(),
         ),
         ChangeNotifierProvider(
           create: (_) => SearchMovieProvider(SearchMovies(movieRepository)),
@@ -60,9 +52,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authRepository = AuthRepository(apiKey);
-    final authService = AuthService();
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Movie App',
@@ -70,22 +59,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: '/',
-      onGenerateRoute: (settings) {
-        if (settings.name == '/movie_detail') {
-          final movieId = settings.arguments as int;
-          return MaterialPageRoute(
-            builder: (_) => MovieDetailPage(movieId: movieId),
-          );
-        }
-        return MaterialPageRoute(builder: (_) => const HomePage());
-      },
-      routes: {
-        '/login': (_) => LoginScreen(
-              authRepository: authRepository,
-              authService: authService,
-            ),
-      },
+      home: HomePage(),
     );
   }
 }
