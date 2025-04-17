@@ -34,6 +34,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    _loadSession();
   }
 
   Future<void> _loadSession() async {
@@ -48,7 +49,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    _loadSession();
     final provider = Provider.of<MovieProvider>(context);
     final userProvider = Provider.of<UserProvider>(context);
     final user = userProvider.user;
@@ -88,22 +88,25 @@ class _HomePageState extends State<HomePage> {
             },
           ),
           _sessionId == null
-              ? IconButton(
-                icon: const Icon(Icons.login),
-                onPressed: () {
-                  Navigator.push(
+              ? TextButton.icon(
+                icon: const Icon(Icons.person),
+                label: const Text("Signin"),
+                onPressed: () async {
+                  await Navigator.push(
                     context,
                     LoginScreen.route(
                       authRepository: _authRepository,
                       authService: _authService,
                     ),
                   );
+                  await _loadSession();
                 },
               )
               : IconButton(
                 icon: const Icon(Icons.logout),
                 onPressed: () async {
                   await _authService.logout();
+                  Provider.of<UserProvider>(context, listen: false).clear();
                   setState(() => _sessionId = null);
                 },
               ),
