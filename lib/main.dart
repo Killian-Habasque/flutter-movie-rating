@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:init/features/auth/data/services/auth_service.dart';
+import 'package:init/features/auth/data/repositories/user_repository_impl.dart';
 import 'package:init/features/auth/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:init/core/constants.dart';
@@ -25,6 +25,9 @@ Future<void> main() async {
 
   final movieRemoteDataSource = MovieRemoteDataSource();
   final movieRepository = MovieRepositoryImpl(movieRemoteDataSource);
+  
+  // Auth repositories
+  final userRepository = UserRepositoryImpl(apiKey);
 
   runApp(
     MultiProvider(
@@ -45,8 +48,7 @@ Future<void> main() async {
           create: (_) => MovieDetailProvider(GetMovieDetails(movieRepository)),
         ),
         ChangeNotifierProvider(
-          create:
-              (_) => UserProvider(authService: AuthService(), apiKey: apiKey),
+          create: (_) => UserProvider(userRepository: userRepository),
         ),
       ],
       child: const MyApp(),

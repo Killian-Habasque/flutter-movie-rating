@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import '../../data/services/auth_service.dart';
+import '../../domain/repositories/user_repository.dart';
 
 class HomeScreen extends StatelessWidget {
   final String sessionId;
-  final AuthService authService;
+  final UserRepository userRepository;
 
   const HomeScreen({
     Key? key,
     required this.sessionId,
-    required this.authService,
+    required this.userRepository,
   }) : super(key: key);
 
   @override
@@ -20,7 +20,7 @@ class HomeScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.exit_to_app),
             onPressed: () async {
-              await authService.logout();
+              await userRepository.logout();
               Navigator.of(context).pushReplacementNamed('/login');
             },
           ),
