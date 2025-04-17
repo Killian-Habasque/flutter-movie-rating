@@ -1,31 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../data/repositories/auth_repository_impl.dart';
-import '../../data/services/auth_service.dart';
+import '../../domain/repositories/auth_repository.dart';
+import '../../domain/repositories/user_repository.dart';
 import '../screens/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   final AuthRepository authRepository;
-  final AuthService authService;
+  final UserRepository userRepository;
 
   const LoginScreen({
     Key? key,
     required this.authRepository,
-    required this.authService,
+    required this.userRepository,
   }) : super(key: key);
 
   static Route<void> route({
     required AuthRepository authRepository,
-    required AuthService authService,
+    required UserRepository userRepository,
   }) {
     return MaterialPageRoute<void>(
       settings: const RouteSettings(name: '/login'),
-
-      builder:
-          (_) => LoginScreen(
-            authRepository: authRepository,
-            authService: authService,
-          ),
+      builder: (_) => LoginScreen(
+        authRepository: authRepository,
+        userRepository: userRepository,
+      ),
     );
   }
 
@@ -43,9 +41,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _checkLogin() async {
-    final isLoggedIn = await widget.authService.isLoggedIn();
+    final isLoggedIn = await widget.userRepository.isLoggedIn();
     if (isLoggedIn) {
-      final sessionId = await widget.authService.getSessionId();
+      final sessionId = await widget.userRepository.getSessionId();
       if (sessionId != null) {
         _navigateToHome(sessionId);
       }
@@ -55,11 +53,10 @@ class _LoginScreenState extends State<LoginScreen> {
   void _navigateToHome(String sessionId) {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder:
-            (context) => HomeScreen(
-              sessionId: sessionId,
-              authService: widget.authService,
-            ),
+        builder: (context) => HomeScreen(
+          sessionId: sessionId,
+          userRepository: widget.userRepository,
+        ),
       ),
     );
   }
@@ -103,28 +100,27 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _handleAuthorizationConfirmation(String requestToken) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Confirmation'),
-            content: const Text('Avez-vous autorisé l\'application sur TMDB?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('Non'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: const Text('Oui'),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: const Text('Confirmation'),
+        content: const Text('Avez-vous autorisé l\'application sur TMDB?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Non'),
           ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Oui'),
+          ),
+        ],
+      ),
     );
 
     if (confirmed == true) {
       try {
         final session = await widget.authRepository.createSession(requestToken);
         // Stocker la session et rediriger vers la page principale
-        await widget.authService.saveSession(session);
+        await widget.userRepository.saveSession(session.sessionId);
         _navigateToHome(session.sessionId);
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -152,10 +148,9 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _isLoading ? null : _login,
-              child:
-                  _isLoading
-                      ? const CircularProgressIndicator()
-                      : const Text('Se connecter'),
+              child: _isLoading
+                  ? const CircularProgressIndicator()
+                  : const Text('Se connecter'),
             ),
           ],
         ),

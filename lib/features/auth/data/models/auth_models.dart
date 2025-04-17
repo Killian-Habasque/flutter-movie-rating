@@ -1,16 +1,16 @@
- class RequestToken {
+class RequestTokenModel {
   final String requestToken;
   final bool success;
   final String expiresAt;
 
-  RequestToken({
+  RequestTokenModel({
     required this.requestToken,
     required this.success,
     required this.expiresAt,
   });
 
-  factory RequestToken.fromJson(Map<String, dynamic> json) {
-    return RequestToken(
+  factory RequestTokenModel.fromJson(Map<String, dynamic> json) {
+    return RequestTokenModel(
       requestToken: json['request_token'],
       success: json['success'],
       expiresAt: json['expires_at'],
@@ -18,17 +18,17 @@
   }
 }
 
-class Session {
+class SessionModel {
   final String sessionId;
   final bool success;
 
-  Session({
+  SessionModel({
     required this.sessionId,
     required this.success,
   });
 
-  factory Session.fromJson(Map<String, dynamic> json) {
-    return Session(
+  factory SessionModel.fromJson(Map<String, dynamic> json) {
+    return SessionModel(
       sessionId: json['session_id'],
       success: json['success'],
     );
