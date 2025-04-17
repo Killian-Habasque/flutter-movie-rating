@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:init/features/auth/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
 // Movie data & logic
@@ -40,6 +41,10 @@ Future<void> main() async {
         ),
         ChangeNotifierProvider(
           create: (_) => MovieDetailProvider(GetMovieDetails(movieRepository)),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (_) => UserProvider(authService: AuthService(), apiKey: apiKey),
         ),
       ],
       child: const MyApp(),

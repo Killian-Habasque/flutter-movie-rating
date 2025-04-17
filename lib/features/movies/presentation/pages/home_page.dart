@@ -37,18 +37,43 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _loadSession() async {
     final id = await _authService.getSessionId();
-    setState(() => _sessionId = id);
+    if (id != null) {
+      setState(() => _sessionId = id);
+
+      // Récupération des infos utilisateur
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      await userProvider.fetchUser(id);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     _loadSession();
     final provider = Provider.of<MovieProvider>(context);
-
+    final userProvider = Provider.of<UserProvider>(context);
+    final user = userProvider.user;
+    print("user");
+    print(user);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Movies'),
+        title: Row(
+          children: [
+            const Text('Movies'),
+            if (user != null) ...[
+              const SizedBox(width: 10),
+              Text('@${user.username}', style: const TextStyle(fontSize: 14)),
+            ],
+          ],
+        ),
         actions: [
+          if (user?.avatarUrl != null)
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: CircleAvatar(
+                radius: 18,
+                backgroundImage: NetworkImage(user!.avatarUrl!),
+              ),
+            ),
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {
