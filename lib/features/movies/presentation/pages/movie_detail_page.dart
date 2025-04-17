@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:init/features/auth/domain/repositories/user_repository.dart';
+import 'package:init/features/auth/presentation/providers/user_provider.dart';
 import '../providers/movie_detail_provider.dart';
+import '../providers/watchlist_provider.dart';
 
 class MovieDetailPage extends StatelessWidget {
   final int movieId;
+  static const routeName = '/movie_detail';
 
   const MovieDetailPage({super.key, required this.movieId});
-  static Route<void> route({required int movieId}) {
-    return MaterialPageRoute<void>(
-      settings: const RouteSettings(name: '/movie_detail'),
-
-      builder: (_) => MovieDetailPage(movieId: movieId),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +18,18 @@ class MovieDetailPage extends StatelessWidget {
         context,
         listen: false,
       ).fetchMovieDetails(movieId);
+      
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      final userRepo = Provider.of<UserRepository>(context, listen: false);
+      final watchlistProvider = Provider.of<WatchlistProvider>(context, listen: false);
+      
+      if (userProvider.user != null) {
+        userRepo.getSessionId().then((sessionId) {
+          if (sessionId != null && watchlistProvider.watchlistMovies.isEmpty) {
+            watchlistProvider.fetchWatchlistMovies(userProvider.user!.id, sessionId);
+          }
+        });
+      }
     });
 
     return Scaffold(
@@ -47,37 +56,47 @@ class MovieDetailPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Image du film
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8.0),
-                    child: Image.network(
-                      'https://image.tmdb.org/t/p/w500${movie.posterPath}',
-                      height: 300,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
+                  Stack(
+                    children: [
+                      // Movie image
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: Image.network(
+                          'https://image.tmdb.org/t/p/w500${movie.posterPath}',
+                          height: 300,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      // Watchlist button
+                      Positioned(
+                        top: 10,
+                        right: 10,
+                        child: _buildWatchlistButton(context, movie.id),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 16),
 
-                  // Titre du film
+                  // Movie title
                   Text(
                     movie.title,
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
                   const SizedBox(height: 16),
 
-                  // Aperçu du film
+                  // Movie overview
                   Text(movie.overview, style: const TextStyle(fontSize: 16)),
                   const SizedBox(height: 16),
 
-                  // Date de sortie
+                  // Release date
                   Text(
                     'Release Date: ${movie.releaseDate}',
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
 
-                  // Note du film
+                  // Movie rating
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -100,14 +119,14 @@ class MovieDetailPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
 
-                  // Langue d'origine
+                  // Original language
                   Text(
                     'Original Language: ${movie.originalLanguage}',
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
 
-                  // Casting
+                  // Cast
                   const Text(
                     'Cast:',
                     style: TextStyle(fontWeight: FontWeight.bold),
@@ -137,6 +156,72 @@ class MovieDetailPage extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+  
+  Widget _buildWatchlistButton(BuildContext context, int movieId) {
+    return Consumer2<UserProvider, WatchlistProvider>(
+      builder: (context, userProvider, watchlistProvider, child) {
+        // Check if user is logged in
+        if (userProvider.user == null) {
+          return ElevatedButton.icon(
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Please log in to add to watchlist')),
+              );
+            },
+            icon: const Icon(Icons.login),
+            label: const Text('Login to add'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black.withOpacity(0.7),
+            ),
+          );
+        }
+        
+        final isInWatchlist = watchlistProvider.isMovieInWatchlist(movieId);
+        
+        return ElevatedButton.icon(
+          onPressed: () async {
+            final userRepo = Provider.of<UserRepository>(context, listen: false);
+            final sessionId = await userRepo.getSessionId();
+            
+            if (sessionId != null) {
+              try {
+                await watchlistProvider.addToWatchlist(
+                  userProvider.user!.id,
+                  sessionId,
+                  movieId,
+                  !isInWatchlist, // Toggle watchlist status
+                );
+                
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      isInWatchlist
+                          ? 'Removed from watchlist'
+                          : 'Added to watchlist',
+                    ),
+                  ),
+                );
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Error: ${e.toString()}')),
+                );
+              }
+            }
+          },
+          icon: Icon(
+            isInWatchlist ? Icons.bookmark : Icons.bookmark_border,
+          ),
+          label: Text(
+            isInWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist',
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.black.withOpacity(0.7),
+            foregroundColor: isInWatchlist ? Colors.yellow : Colors.white,
+          ),
+        );
+      },
     );
   }
 }

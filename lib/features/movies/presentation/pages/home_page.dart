@@ -6,6 +6,7 @@ import 'package:init/features/auth/presentation/providers/user_provider.dart';
 import 'package:init/features/auth/presentation/screens/login_screen.dart';
 import 'package:init/features/movies/presentation/delegates/movie_search_delegate.dart';
 import 'package:init/features/movies/presentation/pages/movie_detail_page.dart';
+import 'package:init/features/movies/presentation/pages/watchlist_page.dart';
 import 'package:init/features/movies/presentation/providers/search_movie_provider.dart';
 import 'package:provider/provider.dart';
 import '../providers/movie_provider.dart';
@@ -64,6 +65,18 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
         actions: [
+          if (user != null)
+            IconButton(
+              icon: const Icon(Icons.bookmark),
+              tooltip: 'My Watchlist',
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const WatchlistPage(),
+                  ),
+                );
+              },
+            ),
           if (user?.avatarUrl != null)
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
@@ -176,7 +189,10 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       onTap: () {
-        Navigator.push(context, MovieDetailPage.route(movieId: movie.id));
+        Navigator.of(context).pushNamed(
+          MovieDetailPage.routeName,
+          arguments: movie.id,
+        );
       },
     );
   }
