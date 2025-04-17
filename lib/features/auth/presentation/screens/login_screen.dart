@@ -4,16 +4,30 @@ import '../../data/repositories/auth_repository_impl.dart';
 import '../../data/services/auth_service.dart';
 import '../screens/home_screen.dart';
 
-
 class LoginScreen extends StatefulWidget {
   final AuthRepository authRepository;
   final AuthService authService;
 
   const LoginScreen({
-    Key? key, 
-    required this.authRepository, 
+    Key? key,
+    required this.authRepository,
     required this.authService,
   }) : super(key: key);
+
+  static Route<void> route({
+    required AuthRepository authRepository,
+    required AuthService authService,
+  }) {
+    return MaterialPageRoute<void>(
+      settings: const RouteSettings(name: '/login'),
+
+      builder:
+          (_) => LoginScreen(
+            authRepository: authRepository,
+            authService: authService,
+          ),
+    );
+  }
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -41,10 +55,11 @@ class _LoginScreenState extends State<LoginScreen> {
   void _navigateToHome(String sessionId) {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (context) => HomeScreen(
-          sessionId: sessionId,
-          authService: widget.authService,
-        ),
+        builder:
+            (context) => HomeScreen(
+              sessionId: sessionId,
+              authService: widget.authService,
+            ),
       ),
     );
   }
@@ -53,22 +68,27 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = true);
     try {
       final requestToken = await widget.authRepository.createRequestToken();
-      final urlString = 'https://www.themoviedb.org/authenticate/${requestToken.requestToken}';
-      
+      final urlString =
+          'https://www.themoviedb.org/authenticate/${requestToken.requestToken}';
+
       // Modification de la méthode d'ouverture de l'URL
       if (await canLaunchUrl(Uri.parse(urlString))) {
         await launchUrl(
           Uri.parse(urlString),
-          mode: LaunchMode.externalApplication
+          mode: LaunchMode.externalApplication,
         );
-        
+
         // Attendre que l'utilisateur ait autorisé l'application sur TMDB
         // Afficher un dialogue demandant confirmation
         await _handleAuthorizationConfirmation(requestToken.requestToken);
       } else {
         // Afficher un message si l'URL ne peut pas être ouverte
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Impossible d\'ouvrir le navigateur. URL: $urlString')),
+          SnackBar(
+            content: Text(
+              'Impossible d\'ouvrir le navigateur. URL: $urlString',
+            ),
+          ),
         );
       }
     } catch (e) {
@@ -83,20 +103,21 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _handleAuthorizationConfirmation(String requestToken) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Confirmation'),
-        content: const Text('Avez-vous autorisé l\'application sur TMDB?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Non'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Confirmation'),
+            content: const Text('Avez-vous autorisé l\'application sur TMDB?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Non'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Oui'),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Oui'),
-          ),
-        ],
-      ),
     );
 
     if (confirmed == true) {
@@ -107,7 +128,9 @@ class _LoginScreenState extends State<LoginScreen> {
         _navigateToHome(session.sessionId);
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erreur lors de la création de la session: $e')),
+          SnackBar(
+            content: Text('Erreur lors de la création de la session: $e'),
+          ),
         );
       }
     }
@@ -116,9 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Connexion'),
-      ),
+      appBar: AppBar(title: const Text('Connexion')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -131,9 +152,10 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _isLoading ? null : _login,
-              child: _isLoading
-                  ? const CircularProgressIndicator()
-                  : const Text('Se connecter'),
+              child:
+                  _isLoading
+                      ? const CircularProgressIndicator()
+                      : const Text('Se connecter'),
             ),
           ],
         ),

@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:init/core/constants.dart';
+import 'package:init/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:init/features/auth/data/services/auth_service.dart';
+import 'package:init/features/auth/presentation/screens/login_screen.dart';
 import 'package:init/features/movies/presentation/delegates/movie_search_delegate.dart';
+import 'package:init/features/movies/presentation/pages/movie_detail_page.dart';
 import 'package:init/features/movies/presentation/providers/search_movie_provider.dart';
 import 'package:provider/provider.dart';
 import '../providers/movie_provider.dart';
@@ -8,18 +12,27 @@ import '../providers/movie_provider.dart';
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
+  static Route<void> route() {
+    return MaterialPageRoute<void>(
+      settings: const RouteSettings(name: '/home'),
+
+      builder: (_) => const HomePage(),
+    );
+  }
+
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
   final AuthService _authService = AuthService();
+  final AuthRepository _authRepository = AuthRepository(apiKey);
+
   String? _sessionId;
 
   @override
   void initState() {
     super.initState();
-    _loadSession();
   }
 
   Future<void> _loadSession() async {
@@ -29,6 +42,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    _loadSession();
     final provider = Provider.of<MovieProvider>(context);
 
     return Scaffold(
@@ -51,69 +65,73 @@ class _HomePageState extends State<HomePage> {
           ),
           _sessionId == null
               ? IconButton(
-                  icon: const Icon(Icons.login),
-                  onPressed: () async {
-                    final result = await Navigator.pushNamed(context, '/login');
-                    if (result == true) {
-                      _loadSession();
-                    }
-                  },
-                )
+                icon: const Icon(Icons.login),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    LoginScreen.route(
+                      authRepository: _authRepository,
+                      authService: _authService,
+                    ),
+                  );
+                },
+              )
               : IconButton(
-                  icon: const Icon(Icons.logout),
-                  onPressed: () async {
-                    await _authService.logout();
-                    setState(() => _sessionId = null);
-                  },
-                ),
+                icon: const Icon(Icons.logout),
+                onPressed: () async {
+                  await _authService.logout();
+                  setState(() => _sessionId = null);
+                },
+              ),
         ],
       ),
-      body: provider.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              padding: const EdgeInsets.all(8.0),
-              children: [
-                const Text(
-                  'Now playing',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                ...provider.nowPlayingMovies.map(
-                  (movie) => _buildMovieTile(context, movie),
-                ),
+      body:
+          provider.isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : ListView(
+                padding: const EdgeInsets.all(8.0),
+                children: [
+                  const Text(
+                    'Now playing',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  ...provider.nowPlayingMovies.map(
+                    (movie) => _buildMovieTile(context, movie),
+                  ),
 
-                const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                const Text(
-                  'Upcoming movies',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                ...provider.upcomingMovies.map(
-                  (movie) => _buildMovieTile(context, movie),
-                ),
+                  const Text(
+                    'Upcoming movies',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  ...provider.upcomingMovies.map(
+                    (movie) => _buildMovieTile(context, movie),
+                  ),
 
-                const Text(
-                  'Top rated movies',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                ...provider.topRatedMovies.map(
-                  (movie) => _buildMovieTile(context, movie),
-                ),
+                  const Text(
+                    'Top rated movies',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  ...provider.topRatedMovies.map(
+                    (movie) => _buildMovieTile(context, movie),
+                  ),
 
-                const Text(
-                  'Popular movies',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                ...provider.popularMovies.map(
-                  (movie) => _buildMovieTile(context, movie),
-                ),
+                  const Text(
+                    'Popular movies',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  ...provider.popularMovies.map(
+                    (movie) => _buildMovieTile(context, movie),
+                  ),
 
-                const SizedBox(height: 20),
-              ],
-            ),
+                  const SizedBox(height: 20),
+                ],
+              ),
     );
   }
 
@@ -136,7 +154,7 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       onTap: () {
-        Navigator.pushNamed(context, '/movie_detail', arguments: movie.id);
+        Navigator.push(context, MovieDetailPage.route(movieId: movie.id));
       },
     );
   }
