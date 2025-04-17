@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:init/features/auth/data/repositories/user_repository_impl.dart';
+import 'package:init/features/auth/domain/repositories/user_repository.dart';
 import 'package:init/features/auth/presentation/providers/user_provider.dart';
+import 'package:init/features/movies/domain/usecases/add_to_watchlist_usecase.dart';
+import 'package:init/features/movies/domain/usecases/get_watchlist_movies_usecase.dart';
+import 'package:init/features/movies/presentation/pages/movie_detail_page.dart';
+import 'package:init/features/movies/presentation/pages/watchlist_page.dart';
+import 'package:init/features/movies/presentation/providers/watchlist_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:init/core/constants.dart';
 
@@ -50,6 +56,17 @@ Future<void> main() async {
         ChangeNotifierProvider(
           create: (_) => UserProvider(userRepository: userRepository),
         ),
+        // Provide user repository for watchlist actions
+        Provider<UserRepository>(
+          create: (_) => userRepository,
+        ),
+        // Watchlist provider
+        ChangeNotifierProvider(
+          create: (_) => WatchlistProvider(
+            addToWatchlistUseCase: AddToWatchlistUseCase(movieRepository),
+            getWatchlistMoviesUseCase: GetWatchlistMoviesUseCase(movieRepository),
+          ),
+        ),
       ],
       child: const MyApp(),
     ),
@@ -69,6 +86,13 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: HomePage(),
+      routes: {
+        WatchlistPage.routeName: (context) => const WatchlistPage(),
+        MovieDetailPage.routeName: (context) {
+          final movieId = ModalRoute.of(context)!.settings.arguments as int;
+          return MovieDetailPage(movieId: movieId);
+        },
+      },
     );
   }
 }
