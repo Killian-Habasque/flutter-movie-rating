@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:init/core/constants.dart';
 import 'package:init/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:init/features/auth/data/services/auth_service.dart';
+import 'package:init/features/auth/presentation/providers/user_provider.dart';
 import 'package:init/features/auth/presentation/screens/login_screen.dart';
 import 'package:init/features/movies/presentation/delegates/movie_search_delegate.dart';
 import 'package:init/features/movies/presentation/pages/movie_detail_page.dart';
@@ -37,10 +38,9 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _loadSession() async {
     final id = await _authService.getSessionId();
-    if (id != null) {
-      setState(() => _sessionId = id);
+    setState(() => _sessionId = id);
 
-      // Récupération des infos utilisateur
+    if (id != null) {
       final userProvider = Provider.of<UserProvider>(context, listen: false);
       await userProvider.fetchUser(id);
     }
@@ -52,8 +52,7 @@ class _HomePageState extends State<HomePage> {
     final provider = Provider.of<MovieProvider>(context);
     final userProvider = Provider.of<UserProvider>(context);
     final user = userProvider.user;
-    print("user");
-    print(user);
+
     return Scaffold(
       appBar: AppBar(
         title: Row(

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:init/features/auth/data/services/auth_service.dart';
 import 'package:init/features/auth/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:init/core/constants.dart';
 
 // Movie data & logic
 import 'features/movies/data/datasources/movie_remote_datasource.dart';
