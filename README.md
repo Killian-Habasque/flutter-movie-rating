@@ -1,22 +1,98 @@
-# init
+# Movie App
 
-A new Flutter project.
+A Flutter application built with clean architecture that uses [The Movie Database (TMDB) API](https://www.themoviedb.org/documentation/api) to display movies and related information.
+
+## Features
+
+- Browse popular movies
+- Search for movies by title
+- View movie details including rating, overview, and cast
+- Save favorite movies
+
+## Architecture
+
+This application follows clean architecture principles with three main layers:
+
+- **Domain**: Contains business logic, entities, and repository interfaces
+- **Data**: Implements repositories and manages data sources
+- **Presentation**: Contains UI components, screens and state management
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+### Prerequisites
 
-A few resources to get you started if this is your first Flutter project:
+- Flutter SDK
+- FVM (Flutter Version Management) installed
+- The Movie DB API key
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### Installation
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1. Clone the repository
+2. Set up your API key in the appropriate configuration file
+3. Run the following command to get dependencies:
 
+```
+fvm flutter pub get
+```
 
-- Ajout de riverpod
-- Clear archi 
+## Development
 
-https://developer.themoviedb.org/docs/getting-started
+### Run the app
+
+```
+fvm flutter run
+```
+
+### Build commands
+
+For Android:
+```
+fvm flutter build apk
+```
+
+For iOS:
+```
+fvm flutter build ipa
+```
+
+## Testing
+
+Run unit tests for the movie repository:
+```
+flutter test test/features/movies/movie_repository_test.dart
+```
+
+## Project Structure
+
+```
+lib/
+  ├── core/              # Core functionality and utilities
+  ├── features/          # Feature modules
+  │   └── movies/        # Movies feature
+  │       ├── data/      # Data layer (repositories, models, data sources)
+  │       ├── domain/    # Domain layer (entities, use cases, repository interfaces)
+  │       └── presentation/ # Presentation layer (screens, widgets, state management)
+  └── main.dart          # Application entry point
+```
+
+## Dependencies
+
+- http: ^0.13.6 - For network requests
+- flutter_dotenv: ^5.1.0 - For environment variable management
+- provider: ^6.0.5 - For state management
+- url_launcher: ^6.2.5 - For launching URLs
+- shared_preferences: ^2.2.2 - For local storage
+
+# Run cmd
+
+fvm flutter run   
+
+# Build cmd
+
+fvm flutter build apk  
+fvm flutter build ipa 
+
+# Unit test 
+
+flutter test test/features/movies/movie_repository_test.dart
+

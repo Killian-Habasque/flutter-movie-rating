@@ -7,15 +7,17 @@ import '../models/auth_models.dart';
 class AuthRepositoryImpl implements AuthRepository {
   final String _apiKey;
   final String _baseUrl = 'https://api.themoviedb.org/3';
+  final http.Client _client;
 
-  AuthRepositoryImpl(this._apiKey);
+  AuthRepositoryImpl(this._apiKey, {http.Client? client}) 
+      : _client = client ?? http.Client();
 
   @override
   Future<RequestToken> createRequestToken() async {
     final url = Uri.parse('$_baseUrl/authentication/token/new?api_key=$_apiKey');
     
     try {
-      final response = await http.get(url);
+      final response = await _client.get(url);
       
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
@@ -38,7 +40,7 @@ class AuthRepositoryImpl implements AuthRepository {
     final url = Uri.parse('$_baseUrl/authentication/session/new?api_key=$_apiKey');
     
     try {
-      final response = await http.post(
+      final response = await _client.post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'request_token': requestToken}),

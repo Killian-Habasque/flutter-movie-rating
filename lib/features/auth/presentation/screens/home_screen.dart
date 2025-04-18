@@ -39,7 +39,6 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Navigation vers la liste des films
                 // TODO: Implémenter la navigation
               },
               child: const Text('Voir les films'),
