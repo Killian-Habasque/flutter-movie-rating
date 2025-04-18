@@ -51,7 +51,6 @@ class MovieModel {
     );
   }
 
-  // Définir la méthode toEntity ici
   MovieEntity toEntity() {
     return MovieEntity(
       id: id,

@@ -68,18 +68,15 @@ class _LoginScreenState extends State<LoginScreen> {
       final urlString =
           'https://www.themoviedb.org/authenticate/${requestToken.requestToken}';
 
-      // Modification de la méthode d'ouverture de l'URL
       if (await canLaunchUrl(Uri.parse(urlString))) {
         await launchUrl(
           Uri.parse(urlString),
           mode: LaunchMode.externalApplication,
         );
 
-        // Attendre que l'utilisateur ait autorisé l'application sur TMDB
-        // Afficher un dialogue demandant confirmation
+
         await _handleAuthorizationConfirmation(requestToken.requestToken);
       } else {
-        // Afficher un message si l'URL ne peut pas être ouverte
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(

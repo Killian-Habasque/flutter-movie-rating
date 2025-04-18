@@ -39,16 +39,16 @@ class MovieEntity {
       overview: model.overview,
       voteAverage: model.voteAverage,
       releaseDate:
-          model.releaseDate, // Assurez-vous de le prendre de MovieModel
-      genres: model.genres, // Assurez-vous de le prendre de MovieModel
+          model.releaseDate, 
+      genres: model.genres, 
       originalLanguage:
-          model.originalLanguage, // Assurez-vous de le prendre de MovieModel
-      runtime: model.runtime, // Assurez-vous de le prendre de MovieModel
-      budget: model.budget, // Assurez-vous de le prendre de MovieModel
-      revenue: model.revenue, // Assurez-vous de le prendre de MovieModel
-      tagline: model.tagline, // Assurez-vous de le prendre de MovieModel
+          model.originalLanguage, 
+      runtime: model.runtime,
+      budget: model.budget,
+      revenue: model.revenue, 
+      tagline: model.tagline,
       backdropPath:
-          model.backdropPath, // Assurez-vous de le prendre de MovieModel
+          model.backdropPath, 
     );
   }
 }
